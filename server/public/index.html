@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Xeven MTracker — Zoho + Gmail</title>
+  <link rel="stylesheet" href="/style.css?v=r6" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Icon sprite: generic outline icons, referenced everywhere via <use>.
+       Colors come from CSS (fill/stroke: currentColor) so icons match
+       whatever text color surrounds them. -->
+  <svg style="display:none" aria-hidden="true">
+    <defs>
+      <symbol id="icon-mail" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <polyline points="3,6 12,13 21,6" fill="none" stroke="currentColor" stroke-width="2"/>
+      </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 2.5v3M12 18.5v3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M2.5 12h3M18.5 12h3M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-tracking" viewBox="0 0 24 24">
+        <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="4" cy="6" r="1.4" fill="currentColor"/>
+        <circle cx="4" cy="12" r="1.4" fill="currentColor"/>
+        <circle cx="4" cy="18" r="1.4" fill="currentColor"/>
+      </symbol>
+      <symbol id="icon-history" viewBox="0 0 24 24">
+        <circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+        <polyline points="12,9 12,13 15,15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 3l1 4 4-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-reports" viewBox="0 0 24 24">
+        <line x1="5" y1="20" x2="5" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="20" x2="12" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="19" y1="20" x2="19" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="3" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-bell" viewBox="0 0 24 24">
+        <path d="M6 9a6 6 0 1 1 12 0v5l2 3H4l2-3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24">
+        <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+      </symbol>
+      <symbol id="icon-cursor" viewBox="0 0 24 24">
+        <path d="M4 4l7 16 2-7 7-2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="15" y1="15" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-filter" viewBox="0 0 24 24">
+        <path d="M3 4h18l-7 8v6l-4 2v-8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-person" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M5 20c0-3.5 3.2-6 7-6s7 2.5 7 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/>
+        <line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24">
+        <path d="M20 12a8 8 0 1 1-2.3-5.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="20,4 20,9 15,9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24">
+        <polyline points="4,12 9,17 20,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-check-double" viewBox="0 0 24 24">
+        <polyline points="2,12 7,17 14,10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="10,12 15,17 22,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24">
+        <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24">
+        <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="icon-save" viewBox="0 0 24 24">
+        <path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <rect x="8" y="13" width="8" height="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        <rect x="8" y="4" width="6" height="4" fill="none" stroke="currentColor" stroke-width="2"/>
+      </symbol>
+      <symbol id="icon-logout" viewBox="0 0 24 24">
+        <path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="15,8 20,12 15,16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="20" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icon-send" viewBox="0 0 24 24">
+        <path d="M3 11l18-8-8 18-2-8-8-2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Login screen -->
+  <main id="login-screen" class="screen">
+    <form id="login-form" class="login-card">
+      <div class="login-mark"><svg class="icon icon-lg"><use href="#icon-mail"/></svg></div>
+      <h1>Xeven MTracker</h1>
+      <p class="login-sub">Sign in to view tracked correspondence.</p>
+      <label>
+        <span>Email</span>
+        <input type="email" id="login-email" required autocomplete="username" />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </label>
+      <button type="submit">Sign in</button>
+      <p id="login-error" class="error" hidden></p>
+      <p id="build-tag" class="build-tag"></p>
+    </form>
+  </main>
+
+  <!-- Dashboard -->
+  <main id="dashboard-screen" class="screen" hidden>
+    <header class="ledger-header">
+      <div class="brand">
+        <span class="brand-mark"><svg class="icon"><use href="#icon-mail"/></svg></span>
+        <span class="brand-text">Xeven MTracker</span>
+      </div>
+      <div class="header-right">
+        <span id="signed-in-as" class="signed-in-as"></span>
+        <button id="logout-btn" class="ghost-btn"><svg class="icon"><use href="#icon-logout"/></svg> Sign out</button>
+      </div>
+    </header>
+
+    <nav class="tabs-row" id="provider-tabs">
+      <button class="tab-btn active" data-provider="zoho">
+        <span class="provider-badge provider-badge-zoho">Z</span>
+        Zoho Mail
+        <span id="notif-badge-zoho" class="notif-badge" hidden>0</span>
+      </button>
+      <button class="tab-btn" data-provider="gmail">
+        <span class="provider-badge provider-badge-gmail">G</span>
+        Gmail
+        <span id="notif-badge-gmail" class="notif-badge" hidden>0</span>
+      </button>
+      <button class="tab-btn" data-provider="hostinger">
+        <span class="provider-badge provider-badge-hostinger">H</span>
+        Hostinger
+        <span id="notif-badge-hostinger" class="notif-badge" hidden>0</span>
+      </button>
+      <button class="tab-btn" data-view="settings"><svg class="icon"><use href="#icon-settings"/></svg> Settings</button>
+    </nav>
+
+    <nav class="subtabs-row" id="subtabs-row">
+      <button class="subtab-btn active" data-subview="tracking"><svg class="icon"><use href="#icon-tracking"/></svg> Tracking</button>
+      <button class="subtab-btn" data-subview="history"><svg class="icon"><use href="#icon-history"/></svg> History</button>
+      <button class="subtab-btn" data-subview="reports"><svg class="icon"><use href="#icon-reports"/></svg> Reports</button>
+      <button class="subtab-btn" data-subview="alerts">
+        <svg class="icon"><use href="#icon-bell"/></svg> Alerts
+        <span id="notif-badge" class="notif-badge" hidden>0</span>
+      </button>
+    </nav>
+
+    <!-- ==== Tracking view (per-email ledger) ==== -->
+    <div id="view-tracking" class="view">
+      <section class="stats-row" id="stats-row">
+        <div class="stat-card clickable-stat" id="stat-card-sent">
+          <div class="stat-value" id="stat-sent">—</div>
+          <div class="stat-label">Sent</div>
+        </div>
+        <div class="stat-card accent-opened clickable-stat" id="stat-card-opened">
+          <div class="stat-value" id="stat-opened">—</div>
+          <div class="stat-label">Opened</div>
+        </div>
+        <div class="stat-card clickable-stat" id="stat-card-unopened">
+          <div class="stat-value" id="stat-unopened">—</div>
+          <div class="stat-label">Unopened</div>
+        </div>
+        <div class="stat-card accent-clicked clickable-stat" id="stat-card-clicked">
+          <div class="stat-value" id="stat-clicked">—</div>
+          <div class="stat-label">Clicked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-rate">—</div>
+          <div class="stat-label">Open rate</div>
+        </div>
+      </section>
+
+      <section class="filters-row">
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-filter"/></svg>
+          <select id="filter-status">
+            <option value="">All statuses</option>
+            <option value="sent">Sent (unopened)</option>
+            <option value="opened">Opened</option>
+            <option value="clicked">Clicked</option>
+          </select>
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-person"/></svg>
+          <input type="text" id="filter-recipient" placeholder="Filter by recipient…" />
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-search"/></svg>
+          <input type="text" id="filter-search" placeholder="Search subject…" />
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-calendar"/></svg>
+          <input type="date" id="filter-from" />
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-calendar"/></svg>
+          <input type="date" id="filter-to" />
+        </label>
+        <button id="filter-apply" class="ghost-btn"><svg class="icon"><use href="#icon-check"/></svg> Apply</button>
+        <button id="filter-clear" class="ghost-btn"><svg class="icon"><use href="#icon-x"/></svg> Clear</button>
+        <button id="refresh-btn" class="ghost-btn"><svg class="icon"><use href="#icon-refresh"/></svg> Refresh</button>
+      </section>
+
+      <section class="bulk-actions-row" id="bulk-actions-row" hidden>
+        <span id="bulk-selected-count">0 selected</span>
+        <button id="bulk-delete-btn" class="ghost-btn danger-btn"><svg class="icon"><use href="#icon-trash"/></svg> Delete selected</button>
+      </section>
+
+      <section class="ledger-table-wrap">
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th class="checkbox-col"><input type="checkbox" id="select-all" /></th>
+              <th>Status</th>
+              <th>Subject</th>
+              <th>Recipients</th>
+              <th>Sent</th>
+              <th>Opens</th>
+              <th>Clicks</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="ledger-body">
+            <tr><td colspan="8" class="empty-row">Loading…</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- ==== History view (flat open/click event log) ==== -->
+    <div id="view-history" class="view" hidden>
+      <section class="filters-row">
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-filter"/></svg>
+          <select id="history-filter-type">
+            <option value="">All events</option>
+            <option value="open">Opens</option>
+            <option value="click">Clicks</option>
+          </select>
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-search"/></svg>
+          <input type="text" id="history-filter-search" placeholder="Search subject…" />
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-calendar"/></svg>
+          <input type="date" id="history-filter-from" />
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-calendar"/></svg>
+          <input type="date" id="history-filter-to" />
+        </label>
+        <button id="history-filter-apply" class="ghost-btn"><svg class="icon"><use href="#icon-check"/></svg> Apply</button>
+        <button id="history-filter-clear" class="ghost-btn"><svg class="icon"><use href="#icon-x"/></svg> Clear</button>
+      </section>
+
+      <section class="ledger-table-wrap">
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Subject</th>
+              <th>Recipients</th>
+              <th>Detail</th>
+              <th>When</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr><td colspan="5" class="empty-row">Loading…</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- ==== Reports view (analytics) ==== -->
+    <div id="view-reports" class="view" hidden>
+      <section class="range-row">
+        <button class="range-btn" data-range="1d">1D</button>
+        <button class="range-btn active" data-range="7d">7D</button>
+        <button class="range-btn" data-range="30d">30D</button>
+        <button class="range-btn" data-range="90d">90D</button>
+        <button class="range-btn" data-range="1y">1Y</button>
+      </section>
+
+      <section class="stats-row" id="analytics-stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="an-sent">—</div>
+          <div class="stat-label">Sent</div>
+        </div>
+        <div class="stat-card accent-opened">
+          <div class="stat-value" id="an-opens">—</div>
+          <div class="stat-label">Opens</div>
+        </div>
+        <div class="stat-card accent-clicked">
+          <div class="stat-value" id="an-clicks">—</div>
+          <div class="stat-label">Clicks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="an-unique">—</div>
+          <div class="stat-label">Unique opened</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="an-rate">—</div>
+          <div class="stat-label">Open rate</div>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <h3>Opens &amp; clicks over time</h3>
+        <canvas id="analytics-chart" height="90"></canvas>
+      </section>
+
+      <section class="chart-card">
+        <h3>Engagement heatmap <span class="heatmap-sub">(opens + clicks, by day &amp; hour)</span></h3>
+        <div id="heatmap" class="heatmap"></div>
+      </section>
+    </div>
+
+    <!-- ==== Alerts view (notifications) ==== -->
+    <div id="view-alerts" class="view" hidden>
+      <section class="filters-row">
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-filter"/></svg>
+          <select id="notif-filter-type">
+            <option value="">All types</option>
+            <option value="open">Opens</option>
+            <option value="click">Clicks</option>
+          </select>
+        </label>
+        <label class="filter-with-icon">
+          <svg class="icon"><use href="#icon-bell"/></svg>
+          <select id="notif-filter-unread">
+            <option value="">All</option>
+            <option value="true">Unread only</option>
+          </select>
+        </label>
+        <button id="notif-filter-apply" class="ghost-btn"><svg class="icon"><use href="#icon-check"/></svg> Apply</button>
+        <button id="notif-mark-all-read" class="ghost-btn"><svg class="icon"><use href="#icon-check-double"/></svg> Mark all read</button>
+      </section>
+
+      <section class="bulk-actions-row" id="notif-bulk-actions-row" hidden>
+        <span id="notif-bulk-selected-count">0 selected</span>
+        <button id="notif-bulk-delete-btn" class="ghost-btn danger-btn"><svg class="icon"><use href="#icon-trash"/></svg> Delete selected</button>
+      </section>
+
+      <section class="ledger-table-wrap">
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th class="checkbox-col"><input type="checkbox" id="notif-select-all" /></th>
+              <th class="bell-col"></th>
+              <th>Type</th>
+              <th>Email</th>
+              <th>Detail</th>
+              <th>When</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="notif-body">
+            <tr><td colspan="7" class="empty-row">Loading…</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- ==== Settings view ==== -->
+    <div id="view-settings" class="view" hidden>
+      <section class="settings-card">
+        <h3>Auto-refresh</h3>
+        <p class="settings-help">How often the Ledger and notification badge refresh automatically.</p>
+        <label class="settings-field">
+          <span>Refresh interval</span>
+          <select id="setting-refresh-interval">
+            <option value="0">Off</option>
+            <option value="15">Every 15 seconds</option>
+            <option value="30">Every 30 seconds</option>
+            <option value="60">Every 1 minute</option>
+            <option value="120">Every 2 minutes</option>
+            <option value="300">Every 5 minutes</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="settings-card">
+        <h3>Email notifications</h3>
+        <p class="settings-help">
+          Sent from your Zoho Mail account when an email is opened for the first time, or when a
+          link is clicked (every click). SMTP credentials can be set here, or left blank to fall
+          back to the <code>SMTP_*</code> variables in <code>.env</code>.
+        </p>
+        <label class="settings-field settings-checkbox">
+          <input type="checkbox" id="setting-email-enabled" />
+          <span>Enable email notifications</span>
+        </label>
+        <label class="settings-field">
+          <span>Send notifications to</span>
+          <input type="email" id="setting-email-to" placeholder="you@yourdomain.com" />
+        </label>
+
+        <div class="settings-subgrid">
+          <label class="settings-field">
+            <span>SMTP host</span>
+            <input type="text" id="setting-smtp-host" placeholder="smtp.zoho.com" />
+          </label>
+          <label class="settings-field">
+            <span>SMTP port</span>
+            <input type="number" id="setting-smtp-port" placeholder="465" />
+          </label>
+        </div>
+        <label class="settings-field">
+          <span>SMTP username (your Zoho email)</span>
+          <input type="text" id="setting-smtp-user" placeholder="you@yourdomain.com" autocomplete="off" />
+        </label>
+        <label class="settings-field">
+          <span id="setting-smtp-pass-label">SMTP password (Zoho App Password)</span>
+          <input type="password" id="setting-smtp-pass" placeholder="Leave blank to keep current" autocomplete="new-password" />
+        </label>
+        <label class="settings-field">
+          <span>"From" address</span>
+          <input type="text" id="setting-smtp-from" placeholder="you@yourdomain.com" />
+        </label>
+
+        <button id="settings-test-email" class="ghost-btn" type="button"><svg class="icon"><use href="#icon-send"/></svg> Send test email</button>
+        <span id="settings-test-msg" class="settings-saved-msg" hidden></span>
+      </section>
+
+      <section class="settings-card">
+        <h3>WhatsApp notifications</h3>
+        <p class="settings-help">
+          Not wired up yet. See the "WhatsApp notifications" section of <code>README.md</code> for
+          how to add this later (e.g. via CallMeBot or Twilio) and send alerts to
+          <span class="mono">+923049297788</span>.
+        </p>
+      </section>
+
+      <button id="settings-save" class="ghost-btn"><svg class="icon"><use href="#icon-save"/></svg> Save settings</button>
+      <span id="settings-saved-msg" class="settings-saved-msg" hidden>Saved ✓</span>
+    </div>
+  </main>
+
+  <!-- Detail panel -->
+  <aside id="detail-panel" class="detail-panel" hidden>
+    <div class="detail-inner">
+      <button id="detail-close" class="ghost-btn"><svg class="icon"><use href="#icon-x"/></svg> Close</button>
+      <h2 id="detail-subject">—</h2>
+      <p id="detail-recipients" class="detail-meta"></p>
+      <p id="detail-sent" class="detail-meta"></p>
+
+      <div class="detail-section">
+        <h3>Notes</h3>
+        <textarea id="detail-notes" rows="3" placeholder="Add a note about this email…"></textarea>
+        <button id="detail-save-notes" class="ghost-btn"><svg class="icon"><use href="#icon-save"/></svg> Save note</button>
+      </div>
+
+      <div class="detail-section">
+        <h3>Opens</h3>
+        <ul id="detail-opens" class="history-list"></ul>
+      </div>
+      <div class="detail-section">
+        <h3>Clicks</h3>
+        <ul id="detail-clicks" class="history-list"></ul>
+      </div>
+
+      <div class="detail-section">
+        <button id="detail-delete" class="ghost-btn danger-btn"><svg class="icon"><use href="#icon-trash"/></svg> Delete this record</button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="/app.js?v=r6"></script>
+</body>
+</html>

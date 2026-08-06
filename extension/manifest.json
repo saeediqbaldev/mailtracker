@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "Xeven MTracker",
+  "version": "3.0.0",
+  "description": "Adds read/open tracking to emails you compose in Zoho Mail, Gmail, or Hostinger Webmail.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://mail.zoho.com/*",
+    "https://mail.zoho.eu/*",
+    "https://mail.zoho.in/*",
+    "https://mail.zoho.com.au/*",
+    "https://mail.google.com/*",
+    "https://mail.hostinger.com/*",
+    "https://journal.xevenpixels.com/*",
+    "http://localhost:3000/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.zoho.com/*",
+        "https://mail.zoho.eu/*",
+        "https://mail.zoho.in/*",
+        "https://mail.zoho.com.au/*"
+      ],
+      "js": ["content-script.js"],
+      "css": ["content-style.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content-script-gmail.js"],
+      "css": ["content-style-gmail.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://mail.hostinger.com/*"],
+      "js": ["content-script-hostinger.js"],
+      "css": ["content-style-hostinger.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
+
